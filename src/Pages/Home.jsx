@@ -4,37 +4,39 @@ import Paginate from "../Components/Paginate";
 import { Link } from "react-router-dom";
 import Search from "../Components/Search";
 import { IoMdHeart } from "react-icons/io";
-import { useSelector } from "react-redux";
 import { CiHeart } from "react-icons/ci";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPostFromApi } from "../store/actionSlice";
 
 const Home = () => {
-  // useState
   const { wishList } = useSelector((state) => state.wishList);
 
-  const [data, setData] = useState({ posts: [] });
   const [currentPage, setCurrentPage] = useState(1);
   const [postperPage] = useState(4);
+
+  const dispatch = useDispatch();
+
+  const postData = useSelector((state) => state.apiData?.postData?.posts);
+  const isLoading = useSelector((state) => state?.apiData?.isLoading);
+  const isError = useSelector((state) => state?.apiData?.isError);
+
+  useEffect(() => {
+    dispatch(fetchPostFromApi());
+  }, [dispatch]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error occurred.</div>;
+  }
+
 
   // Pagination logic
   const indexOfLastPost = currentPage * postperPage;
   const indexOfFirstPost = indexOfLastPost - postperPage;
-  const currentPosts = data.posts.slice(indexOfFirstPost, indexOfLastPost);
-
-  // Fetch data for all posts
-  const handleDataForAllPosts = async () => {
-    try {
-      const post = await fetch("https://dummyjson.com/posts");
-      const res = await post.json();
-      setData(res);
-    } catch (err) {
-      console.log("error while fetching data", err);
-    }
-  };
-
-  // useEffect to fetch data on component mount
-  useEffect(() => {
-    handleDataForAllPosts();
-  }, []);
+  const currentPosts = postData?.slice(indexOfFirstPost, indexOfLastPost);
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -50,7 +52,7 @@ const Home = () => {
           </NavigationLink>
         </HeartWrapper>
         <Container>
-          {currentPosts.map((e) => (
+          {currentPosts?.map((e) => (
             <BoxWrapper key={e.id}>
               <NavigationLink to={`/dataAll/${e.id}`}>
                 <div>
@@ -69,7 +71,7 @@ const Home = () => {
       <Paginate
         currentPage={currentPage}
         postPerPage={postperPage}
-        totalPosts={data.posts.length}
+        totalPosts={postData?.length}
         paginate={paginate}
       />
     </>

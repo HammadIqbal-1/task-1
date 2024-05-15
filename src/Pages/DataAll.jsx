@@ -1,34 +1,29 @@
+import styled from "styled-components";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import styled from "styled-components";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import { IoMdHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import { addToWishList, removeFromWishList } from "../store/wishListSlice";
+import { fetchSinglePostDynamically } from "../store/dynmaicSlice";
 
 const DataAll = () => {
-  const param = useParams();
+  const { id } = useParams();
   const dispatch = useDispatch();
-  const [fav, setFav] = useState(true);
 
-  const [data, setData] = useState({ posts: [{}] });
+  // useStates
+  const [fav, setFav] = useState(true);
+  // const [data, setData] = useState({ posts: [] });
+
+  // calling the dynamic Data
+  const dynmaicLoader = useSelector((state) => state?.dynamicData.dynamicData);
+  // console.log("this should be dynmaic", dynmaicLoader);
 
   // useEffect for calling the api
   useEffect(() => {
-    handleGetSinglePost();
-  }, []);
-
-  //  hitting api
-  const handleGetSinglePost = async () => {
-    try {
-      const singlePost = await fetch(`https://dummyjson.com/posts/${param.id}`);
-      const res = await singlePost.json();
-      setData(res);
-    } catch (error) {
-      console.log("failed to get the post", error);
-    }
-  };
+    dispatch(fetchSinglePostDynamically(id));
+  }, [dispatch, id]);
 
   return (
     <>
@@ -42,22 +37,22 @@ const DataAll = () => {
               {fav ? (
                 <CiHeart
                   onClick={() => {
-                    dispatch(addToWishList(data)), setFav(false);
+                    dispatch(addToWishList(dynmaicLoader)), setFav(false);
                   }}
                 />
               ) : (
                 <IoMdHeart
                   onClick={() => {
-                    dispatch(removeFromWishList({id:data.id})), setFav(true);
+                    dispatch(removeFromWishList(id)), setFav(true);
                   }}
                 />
               )}
             </IconWrapper>
-            <h4>{data.title}</h4>
-            <p>{data.body}</p>
+            <h4>{dynmaicLoader?.title}</h4>
+            <p>{dynmaicLoader?.body}</p>
             <TagsAndReactionsWrapper>
-              <span>{data.tags}</span>
-              <span>{data.reactions}</span>
+              <span>{dynmaicLoader?.tags}</span>
+              <span>{dynmaicLoader?.reactions}</span>
             </TagsAndReactionsWrapper>
           </div>
         </BoxWrapper>
