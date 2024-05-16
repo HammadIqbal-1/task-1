@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
 import { IoMdHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
-import { addToWishList ,removeFromWishList} from "../store/slices/wishListSlice";
+import { addToWishList, removeFromWishList } from "../store/slices/postSlice";
 import { fetchSinglePostDynamically } from "../store/api/actions";
 
 const DataAll = () => {
@@ -16,7 +16,7 @@ const DataAll = () => {
   const [fav, setFav] = useState(true);
 
   // calling the dynamic Data
-  const dynmaicLoader = useSelector((state) => state?.dynamicData.dynamicData);
+  const dynmaicLoader = useSelector((state) => state?.apiData.dynamicData);
   // console.log("this should be dynmaic", dynmaicLoader);
 
   // useEffect for calling the api

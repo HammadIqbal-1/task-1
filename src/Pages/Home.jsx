@@ -16,10 +16,10 @@ const Home = () => {
   const [filter, setFilter] = useState("");
 
   //useSelector
-  const { wishList } = useSelector((state) => state.wishList);
-  const postData = useSelector((state) => state.apiData?.postData?.posts);
-  const isLoading = useSelector((state) => state?.apiData?.isLoading);
-  const isError = useSelector((state) => state?.apiData?.isError);
+  const { wishList, postData, isLoading, isError } = useSelector(
+    (state) => state.apiData
+  );
+  // console.log(postData, "postData");
 
   // useEffect
   useEffect(() => {
@@ -35,11 +35,9 @@ const Home = () => {
   }
 
   // Filtering logic
-  const filteredPosts = postData?.filter((e) => {
-    const titleMatch = e.title.toLowerCase().includes(filter.toLowerCase());
-    const bodyMatch = e.body.toLowerCase().includes(filter.toLowerCase());
-    return titleMatch || bodyMatch;
-  });
+  const filteredPosts = postData.posts?.filter((e) =>
+    e.title.toLowerCase().includes(filter.toLowerCase())
+  );
 
   // Pagination logic
   const indexOfLastPost = currentPage * postperPage;

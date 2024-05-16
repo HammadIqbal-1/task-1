@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
-import { removeFromWishList } from "../store/slices/wishListSlice";
+import { removeFromWishList } from "../store/slices/postSlice";
 
 const Fav = () => {
   const dispatch = useDispatch();
-  const { wishList } = useSelector((state) => state.wishList);
+  const { wishList } = useSelector((state) => state.apiData);
 
   return (
     <>
