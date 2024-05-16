@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
-import wishListSlice from "./wishListSlice";
-import actionSlice from "./actionSlice";
-import dynmaicSlice from "./dynmaicSlice";
+import wishListSlice from "./slices/wishListSlice";
+import actionSlice from "./slices/actionSlice";
+import dynmaicSlice from "./slices/dynmaicSlice";
 
 export const store = configureStore({
   reducer: {

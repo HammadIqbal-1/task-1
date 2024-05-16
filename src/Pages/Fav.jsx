@@ -1,10 +1,10 @@
-import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
 import { RxCross2 } from "react-icons/rx";
-import { removeFromWishList } from "../store/wishListSlice";
+import { removeFromWishList } from "../store/slices/wishListSlice";
 
 const Fav = () => {
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const { wishList } = useSelector((state) => state.wishList);
 
   return (
@@ -12,7 +12,9 @@ const Fav = () => {
       <Container>
         {wishList.map((e) => (
           <BoxWrapper key={e.id}>
-            <RxCross2  onClick={()=>dispatch(removeFromWishList({id:e.id}))}/>
+            <RxCross2
+              onClick={() => dispatch(removeFromWishList({ id: e.id }))}
+            />
             <div>
               <h4>{e.title}</h4>
               <p>{e.body}</p>

@@ -2,24 +2,26 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Paginate from "../Components/Paginate";
 import { Link } from "react-router-dom";
-import Search from "../Components/Search";
 import { IoMdHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPostFromApi } from "../store/actionSlice";
+import { fetchPostFromApi } from "../store/api/actions";
+import { IoSearchOutline } from "react-icons/io5";
 
 const Home = () => {
-  const { wishList } = useSelector((state) => state.wishList);
-
+  const dispatch = useDispatch();
+  // useState
   const [currentPage, setCurrentPage] = useState(1);
   const [postperPage] = useState(4);
+  const [filter, setFilter] = useState("");
 
-  const dispatch = useDispatch();
-
+  //useSelector
+  const { wishList } = useSelector((state) => state.wishList);
   const postData = useSelector((state) => state.apiData?.postData?.posts);
   const isLoading = useSelector((state) => state?.apiData?.isLoading);
   const isError = useSelector((state) => state?.apiData?.isError);
 
+  // useEffect
   useEffect(() => {
     dispatch(fetchPostFromApi());
   }, [dispatch]);
@@ -32,11 +34,17 @@ const Home = () => {
     return <div>Error occurred.</div>;
   }
 
+  // Filtering logic
+  const filteredPosts = postData?.filter((e) => {
+    const titleMatch = e.title.toLowerCase().includes(filter.toLowerCase());
+    const bodyMatch = e.body.toLowerCase().includes(filter.toLowerCase());
+    return titleMatch || bodyMatch;
+  });
 
   // Pagination logic
   const indexOfLastPost = currentPage * postperPage;
   const indexOfFirstPost = indexOfLastPost - postperPage;
-  const currentPosts = postData?.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = filteredPosts?.slice(indexOfFirstPost, indexOfLastPost);
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -45,7 +53,16 @@ const Home = () => {
     <>
       <div>
         <HeartWrapper>
-          <Search />
+          <Wrapper>
+            <FilterWrapper
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              placeholder="find anything"
+            />
+            <SearchBox>
+              <IoSearchOutline />
+            </SearchBox>
+          </Wrapper>
           <NavigationLink to="/fav">
             {wishList.length > 0 ? <IoMdHeart /> : <CiHeart />}
             {wishList.length}
@@ -56,6 +73,7 @@ const Home = () => {
             <BoxWrapper key={e.id}>
               <NavigationLink to={`/dataAll/${e.id}`}>
                 <div>
+                  <div></div>
                   <h4>{e.title}</h4>
                   <p>{e.body.slice(0, 80).trimEnd() + "..."}</p>
                   <TagsAndReactionsWrapper>
@@ -71,7 +89,7 @@ const Home = () => {
       <Paginate
         currentPage={currentPage}
         postPerPage={postperPage}
-        totalPosts={postData?.length}
+        totalPosts={filteredPosts?.length}
         paginate={paginate}
       />
     </>
@@ -108,6 +126,25 @@ const HeartWrapper = styled.div`
   justify-content: center;
   align-items: center;
   gap: 2rem;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const FilterWrapper = styled.input`
+  padding: 10px;
+  border-radius: 18px;
+  border: 1px solid gray;
+`;
+const SearchBox = styled.div`
+  display: flex;
+  position: relative;
+  top: 0;
+  right: 25px;
+  cursor: pointer;
+  justify-content: center;
 `;
 
 export default Home;
