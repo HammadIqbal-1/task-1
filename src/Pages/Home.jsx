@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Paginate from "../Components/Paginate";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+// Navigate
 import { IoMdHeart } from "react-icons/io";
 import { CiHeart } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPostFromApi } from "../store/api/actions";
 import { IoSearchOutline } from "react-icons/io5";
+import { IoIosClose } from "react-icons/io";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -14,6 +16,7 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [postperPage] = useState(4);
   const [filter, setFilter] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   //useSelector
   const { wishList, postData, isLoading, isError } = useSelector(
@@ -47,6 +50,22 @@ const Home = () => {
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  // logout logic
+  const handlelogout = () => {
+    localStorage.clear();
+    <Navigate to="/" />;
+    window.location.reload();
+  };
+
+  // get user pic
+  let userImg = localStorage.getItem("img");
+  let username = localStorage.getItem("userName");
+
+  // modal logic
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+  };
+
   return (
     <>
       <div>
@@ -65,6 +84,22 @@ const Home = () => {
             {wishList.length > 0 ? <IoMdHeart /> : <CiHeart />}
             {wishList.length}
           </NavigationLink>
+          <CircleButton onClick={toggleModal}>
+            <ImageWrapper src={userImg} alt="img" />
+          </CircleButton>
+
+          {isModalOpen && (
+            <ModalOverlay>
+              <ModalContent>
+                <IoIosClose
+                  style={{ cursor: "pointer" }}
+                  onClick={toggleModal}
+                />
+                <h4>user name:{username}</h4>
+                <CloseButton onClick={handlelogout}>Logout</CloseButton>
+              </ModalContent>
+            </ModalOverlay>
+          )}
         </HeartWrapper>
         <Container>
           {currentPosts?.map((e) => (
@@ -94,11 +129,53 @@ const Home = () => {
   );
 };
 
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalContent = styled.div`
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+`;
+
+const CloseButton = styled.button`
+  background-color: #ff0000;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+`;
+
+const CircleButton = styled.div`
+  height: 55px;
+  width: 55px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1px solid gray;
+`;
+const ImageWrapper = styled.img`
+  height: 39px;
+  width: 39px;
+  padding: 8px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+`;
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  cursor: pointer;
 `;
 
 const BoxWrapper = styled.div`
@@ -107,6 +184,7 @@ const BoxWrapper = styled.div`
   border: 1px solid gray;
   border-radius: 18px;
   padding: 10px;
+  cursor: pointer;
 `;
 
 const TagsAndReactionsWrapper = styled.div`

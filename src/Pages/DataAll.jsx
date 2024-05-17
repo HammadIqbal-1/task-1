@@ -30,7 +30,7 @@ const DataAll = () => {
         <BoxWrapper>
           <div>
             <IconWrapper>
-              <NavigationLink to="/">
+              <NavigationLink to="/home">
                 <RxCross2 />
               </NavigationLink>
               {fav ? (
